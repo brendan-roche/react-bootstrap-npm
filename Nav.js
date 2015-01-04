@@ -49,17 +49,31 @@ var Nav = React.createClass({displayName: 'Nav',
     classes['navbar-collapse'] = this.props.collapsable;
 
     if (this.props.navbar && !this.props.collapsable) {
-      return (this.renderUl());
+      return (this.renderUl(this.props.children));
     }
 
     return (
-      React.createElement("nav", React.__spread({},  this.props, {className: joinClasses(this.props.className, classSet(classes))}), 
-        this.renderUl()
+      React.createElement("nav", React.__spread({},  this.props, {className: joinClasses(this.props.className, classSet(classes))}),
+        this.renderNavChildren()
       )
     );
   },
 
-  renderUl: function () {
+  renderNavChildren: function () {
+    var navChildren = [];
+    var navItems = this.props.children.filter(function(child) {
+      if(child.props.navChild) {
+        navChildren.push(child);
+        return false;
+      }
+
+      return true;
+    });
+
+    return navChildren.concat(this.renderUl(navItems));
+  },
+
+  renderUl: function (children) {
     var classes = this.getBsClassSet();
 
     classes['nav-stacked'] = this.props.stacked;
@@ -70,7 +84,7 @@ var Nav = React.createClass({displayName: 'Nav',
 
     return (
       React.createElement("ul", React.__spread({},  this.props, {className: joinClasses(this.props.className, classSet(classes)), ref: "ul"}), 
-        ValidComponentChildren.map(this.props.children, this.renderNavItem)
+        ValidComponentChildren.map(children, this.renderNavItem)
       )
     );
   },
